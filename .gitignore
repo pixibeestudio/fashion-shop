@@ -1,0 +1,5 @@
+.env
+.agents/*
+storage/logs/*
+storage/cache/*
+!.keep
