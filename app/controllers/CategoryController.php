@@ -13,6 +13,10 @@ class CategoryController {
         return $this->categoryModel->getAll();
     }
 
+    public function paginate($page = 1) {
+        return $this->categoryModel->paginate($page, 10);
+    }
+
     public function getParents() {
         return $this->categoryModel->getParentCategories();
     }

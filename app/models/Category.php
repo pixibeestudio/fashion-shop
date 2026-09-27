@@ -19,6 +19,32 @@ class Category {
         return $stmt->fetchAll();
     }
 
+    public function paginate($page = 1, $limit = 10) {
+        $offset = ($page - 1) * $limit;
+        
+        $countStmt = $this->db->query("SELECT COUNT(*) FROM categories");
+        $total = $countStmt->fetchColumn();
+
+        $stmt = $this->db->prepare("
+            SELECT c.*, p.name as parent_name, 
+                   (SELECT COUNT(*) FROM products WHERE category_id = c.id) as product_count
+            FROM categories c 
+            LEFT JOIN categories p ON c.parent_id = p.id 
+            ORDER BY c.id DESC
+            LIMIT :limit OFFSET :offset
+        ");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'data' => $stmt->fetchAll(),
+            'total' => $total,
+            'pages' => ceil($total / $limit),
+            'current_page' => $page
+        ];
+    }
+
     public function getParentCategories() {
         $stmt = $this->db->query("SELECT id, name FROM categories WHERE parent_id IS NULL ORDER BY name ASC");
         return $stmt->fetchAll();

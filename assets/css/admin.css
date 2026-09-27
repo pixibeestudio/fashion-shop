@@ -262,17 +262,17 @@ tr:hover { background-color: #F9FAFB; }
     font-size: 14px;
     color: var(--text-muted);
 }
-.modal-body .form-group {
+.form-group {
     margin-bottom: 20px;
 }
-.modal-body label {
+.form-group label {
     display: block;
     margin-bottom: 8px;
     font-size: 14px;
     font-weight: 500;
     color: var(--text-main);
 }
-.modal-body input, .modal-body select, .modal-body textarea {
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--border);
@@ -282,7 +282,7 @@ tr:hover { background-color: #F9FAFB; }
     transition: all 0.2s;
     box-sizing: border-box;
 }
-.modal-body input:focus, .modal-body select:focus, .modal-body textarea:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
