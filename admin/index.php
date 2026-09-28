@@ -24,7 +24,7 @@ $page = $_GET['page'] ?? 'dashboard';
         <div class="logo">FashionShop</div>
         <div class="menu" id="adminMenu">
             <a href="index.php?page=dashboard" class="menu-item <?= $page === 'dashboard' ? 'active' : '' ?>">📊 Tổng quan</a>
-            <a href="index.php?page=orders" class="menu-item <?= $page === 'orders' ? 'active' : '' ?>">📦 Đơn hàng</a>
+            <a href="index.php?page=orders" class="menu-item <?= ($page === 'orders' || $page === 'order_detail') ? 'active' : '' ?>">📦 Đơn hàng</a>
             <a href="index.php?page=products" class="menu-item <?= $page === 'products' ? 'active' : '' ?>">👕 Sản phẩm</a>
             <a href="index.php?page=categories" class="menu-item <?= $page === 'categories' ? 'active' : '' ?>">📂 Danh mục</a>
             <a href="index.php?page=purchase_orders" class="menu-item <?= ($page === 'purchase_orders' || $page === 'purchase_order_create') ? 'active' : '' ?>">📥 Nhập kho</a>
