@@ -25,7 +25,7 @@ $success = get_flash_message('success');
 
     <!-- Notification Toast if needed -->
     <?php if ($error || $success): ?>
-    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 400px; text-align: center;">
+    <div id="toastMessage" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 400px; text-align: center; transition: opacity 0.5s ease-out;">
         <?php if ($error): ?>
             <div class="alert alert-error"><?= e($error) ?></div>
         <?php endif; ?>
@@ -33,6 +33,15 @@ $success = get_flash_message('success');
             <div class="alert alert-success"><?= e($success) ?></div>
         <?php endif; ?>
     </div>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toastMessage');
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }
+        }, 3000); // 3 seconds
+    </script>
     <?php endif; ?>
 
     <div class="auth-container" id="authContainer">

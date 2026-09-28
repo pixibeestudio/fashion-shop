@@ -148,8 +148,8 @@ class AuthController {
             $_SESSION['customer_id'] = $customer['id'];
             $_SESSION['customer_name'] = $customer['full_name'];
             
-            // Tạm thời điều hướng Khách hàng vào trang Admin theo yêu cầu test của bạn
-            header('Location: /fashion-shop/admin/index.php');
+            // Điều hướng Khách hàng về trang Storefront
+            header('Location: /fashion-shop/public/index.php');
             exit;
         }
 
