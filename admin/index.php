@@ -30,7 +30,7 @@ $page = $_GET['page'] ?? 'dashboard';
             <a href="index.php?page=purchase_orders" class="menu-item <?= ($page === 'purchase_orders' || $page === 'purchase_order_create') ? 'active' : '' ?>">📥 Nhập kho</a>
             <a href="index.php?page=customers" class="menu-item <?= $page === 'customers' ? 'active' : '' ?>">👥 Khách hàng</a>
             <a href="index.php?page=promotions" class="menu-item <?= $page === 'promotions' ? 'active' : '' ?>">🎁 Khuyến mãi</a>
-            <a href="index.php?page=system" class="menu-item <?= $page === 'system' ? 'active' : '' ?>">⚙️ Hệ thống</a>
+            <a href="index.php?page=users" class="menu-item <?= $page === 'users' ? 'active' : '' ?>">⚙️ Hệ thống</a>
         </div>
     </div>
 
