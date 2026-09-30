@@ -226,21 +226,24 @@ class ProductController {
     }
 
     public function delete() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Get ID from raw JSON or POST
-            $data = json_decode(file_get_contents("php://input"), true);
-            $id = $data['id'] ?? null;
-            
-            if (!$id) {
-                $this->jsonResponse(false, 'Không tìm thấy ID sản phẩm.');
-                return;
-            }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->jsonResponse(false, 'Phương thức không hợp lệ.');
+            return;
+        }
 
-            if ($this->productModel->delete($id)) {
-                $this->jsonResponse(true, 'Xóa sản phẩm thành công!');
-            } else {
-                $this->jsonResponse(false, 'Lỗi! Không thể xóa sản phẩm này.');
-            }
+        // Lấy ID từ JSON body hoặc POST
+        $data = json_decode(file_get_contents("php://input"), true);
+        $id = $data['id'] ?? ($_POST['id'] ?? null);
+        
+        if (!$id) {
+            $this->jsonResponse(false, 'Không tìm thấy ID sản phẩm.');
+            return;
+        }
+
+        if ($this->productModel->delete($id)) {
+            $this->jsonResponse(true, 'Xóa sản phẩm thành công!');
+        } else {
+            $this->jsonResponse(false, 'Không thể xóa sản phẩm. Vui lòng kiểm tra lại cơ sở dữ liệu.');
         }
     }
 }

@@ -124,31 +124,44 @@ class Product {
     }
 
     public function delete($id) {
-        // 1. Lấy danh sách ảnh trước khi xóa để xóa file vật lý
-        $stmtImg = $this->db->prepare("SELECT image_url FROM product_images WHERE product_id = :id");
-        $stmtImg->execute(['id' => $id]);
-        $images = $stmtImg->fetchAll(PDO::FETCH_COLUMN);
+        try {
+            // 1. Lấy danh sách ảnh trước khi xóa để xóa file vật lý sau
+            $stmtImg = $this->db->prepare("SELECT image_url FROM product_images WHERE product_id = :id");
+            $stmtImg->execute(['id' => $id]);
+            $images = $stmtImg->fetchAll(PDO::FETCH_COLUMN);
 
-        // 2. Thực hiện xóa cứng (Hard Delete). Do đã setup CSDL ON DELETE CASCADE, 
-        // toàn bộ Variants và Images của Product này sẽ tự động bị xóa theo trong CSDL.
-        $stmt = $this->db->prepare("DELETE FROM products WHERE id = :id");
-        $result = $stmt->execute(['id' => $id]);
+            $this->db->beginTransaction();
 
-        // 3. Xóa file vật lý trên ổ cứng nếu xóa CSDL thành công
-        if ($result && !empty($images)) {
-            foreach ($images as $imgUrl) {
-                // imgUrl có dạng: /fashion-shop/public/uploads/products/prod_123.jpg
-                // Chuyển thành đường dẫn vật lý tuyệt đối trên Windows
-                $relativePath = str_replace('/fashion-shop/', '', $imgUrl);
-                $absolutePath = __DIR__ . '/../../' . $relativePath;
-                if (file_exists($absolutePath)) {
-                    unlink($absolutePath);
+            // 2. Xóa thủ công các bản ghi con (đề phòng DB không có ON DELETE CASCADE)
+            $this->db->prepare("DELETE FROM product_images WHERE product_id = :id")->execute(['id' => $id]);
+            $this->db->prepare("DELETE FROM product_variants WHERE product_id = :id")->execute(['id' => $id]);
+
+            // 3. Xóa sản phẩm chính
+            $stmt = $this->db->prepare("DELETE FROM products WHERE id = :id");
+            $result = $stmt->execute(['id' => $id]);
+
+            $this->db->commit();
+
+            // 4. Xóa file ảnh vật lý trên ổ cứng sau khi DB xóa thành công
+            if ($result && !empty($images)) {
+                foreach ($images as $imgUrl) {
+                    // imgUrl dạng: /fashion-shop/public/uploads/products/prod_xxx.jpg
+                    $relativePath = str_replace('/fashion-shop/', '', $imgUrl);
+                    $absolutePath = __DIR__ . '/../../' . $relativePath;
+                    if (file_exists($absolutePath)) {
+                        unlink($absolutePath);
+                    }
                 }
             }
-        }
 
-        return $result;
+            return $result;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log('[ProductModel::delete] ' . $e->getMessage());
+            return false;
+        }
     }
+
 
     public function getById($id) {
         $stmt = $this->db->prepare("SELECT * FROM products WHERE id = :id");

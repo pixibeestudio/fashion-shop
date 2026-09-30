@@ -51,11 +51,40 @@ if (!$product) {
                 </div>
             </div>
 
-            <!-- Khối 2: Biến thể -->
+            <!-- Khối 2: Tạo biến thể nhanh -->
+            <div class="card" style="background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                <h3 style="margin-top:0; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
+                    <i class="fas fa-magic" style="color: var(--primary); margin-right: 6px;"></i>Thêm biến thể nhanh
+                </h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                    Nhập thêm màu/size mới (phân cách bằng dấu phẩy). Hệ thống sẽ tạo các tổ hợp mới và bỏ qua các tổ hợp đã có.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label>Danh sách Màu sắc</label>
+                        <input type="text" id="variantColors" placeholder="Ví dụ: Trắng, Đen, Đỏ" style="width:100%;">
+                    </div>
+                    <div class="form-group">
+                        <label>Danh sách Kích thước</label>
+                        <input type="text" id="variantSizes" placeholder="Ví dụ: S, M, L, XL" style="width:100%;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center; margin-top: 8px;">
+                    <div class="form-group" style="flex:1; margin-bottom:0;">
+                        <label>Giá mặc định (VNĐ)</label>
+                        <input type="number" id="variantDefaultPrice" placeholder="200000" min="0" style="width:100%;">
+                    </div>
+                    <button type="button" id="btnGenerateVariants" class="btn-primary" style="padding: 10px 20px; font-size: 14px; margin-top: 22px; white-space: nowrap;">
+                        <i class="fas fa-cogs"></i> Tạo biến thể
+                    </button>
+                </div>
+            </div>
+
+            <!-- Khối 3: Bảng biến thể hiện có -->
             <div class="card" style="background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px;">
-                    <h3 style="margin: 0;">Phân loại / Biến thể (Variants)</h3>
-                    <button type="button" id="btnAddVariant" class="btn-primary" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-plus"></i> Thêm phân loại</button>
+                    <h3 style="margin: 0;">Danh sách biến thể <span id="variantCount" style="font-size: 14px; color: var(--text-muted); font-weight: 400;">(<?= count($product['variants']) ?> biến thể)</span></h3>
+                    <button type="button" id="btnAddVariant" class="btn-primary" style="padding: 6px 12px; font-size: 14px;"><i class="fas fa-plus"></i> Thêm 1 dòng</button>
                 </div>
                 
                 <div class="table-container">
@@ -85,6 +114,11 @@ if (!$product) {
                         </tbody>
                     </table>
                 </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px; line-height: 1.6;">
+                    <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                    <strong>Lưu ý:</strong> Mỗi dòng là <strong>một biến thể riêng biệt</strong> (1 màu + 1 size). 
+                    Ví dụ: "Trắng - M", "Trắng - L", "Đen - M"... Mỗi biến thể có SKU, giá bán và tồn kho riêng.
+                </p>
             </div>
         </div>
 
@@ -178,7 +212,7 @@ if (!$product) {
 
 <!-- Sử dụng chung logic của products.js (sinh slug, tự gen SKU, preview ảnh) -->
 <!-- Nhưng thay đổi endpoint submit và xử lý xóa ảnh cũ -->
-<script src="/fashion-shop/assets/js/products.js"></script>
+<script src="/fashion-shop/assets/js/products.js?v=<?= time() ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Override form submit for Update
