@@ -45,5 +45,6 @@
         </div>
     </div>
 
+    <script src="/fashion-shop/assets/js/cart.js?v=<?= time() ?>"></script>
 </body>
 </html>

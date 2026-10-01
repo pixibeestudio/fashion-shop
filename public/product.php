@@ -342,6 +342,59 @@ require_once __DIR__ . '/includes/header.php';
             }
         }
     });
+    // ========================================================
+    // THÊM VÀO GIỎ & MUA NGAY
+    // ========================================================
+    const addToCart = async (isBuyNow = false) => {
+        if (!currentVariant) {
+            alert('Vui lòng chọn đầy đủ Phân loại (Màu sắc & Kích cỡ).');
+            return;
+        }
+
+        const btnAdd = document.getElementById('btnAddToCart');
+        const originalText = btnAdd.innerHTML;
+        
+        if (!isBuyNow) {
+            btnAdd.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            btnAdd.disabled = true;
+        }
+
+        try {
+            const res = await fetch('/fashion-shop/api/cart/add.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    variant_id: currentVariant.id,
+                    quantity: qty
+                })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                if (window.updateCartBadge) window.updateCartBadge();
+                
+                if (isBuyNow) {
+                    window.location.href = '/fashion-shop/public/checkout.php';
+                } else {
+                    alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
+                }
+            } else {
+                alert(data.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Lỗi kết nối máy chủ. Vui lòng thử lại.');
+        } finally {
+            if (!isBuyNow) {
+                btnAdd.innerHTML = originalText;
+                btnAdd.disabled = false;
+            }
+        }
+    };
+
+    document.getElementById('btnAddToCart').addEventListener('click', () => addToCart(false));
+    document.getElementById('btnBuyNow').addEventListener('click', () => addToCart(true));
+
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
