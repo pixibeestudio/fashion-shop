@@ -95,6 +95,7 @@ if (!$product) {
                                 <th>Màu sắc <span style="color:red">*</span></th>
                                 <th>Kích cỡ <span style="color:red">*</span></th>
                                 <th>Giá bán (VNĐ) <span style="color:red">*</span></th>
+                                <th>Giá Sale (VNĐ)</th>
                                 <th>Tồn kho (Tự động)</th>
                                 <th></th>
                             </tr>
@@ -107,6 +108,7 @@ if (!$product) {
                                 <td><input type="text" name="variants[color][]" class="variant-input" value="<?= htmlspecialchars($v['color']) ?>" required></td>
                                 <td><input type="text" name="variants[size][]" class="variant-input" value="<?= htmlspecialchars($v['size']) ?>" required></td>
                                 <td><input type="number" name="variants[price][]" class="variant-input" value="<?= htmlspecialchars($v['price']) ?>" min="0" required></td>
+                                <td><input type="number" name="variants[sale_price][]" class="variant-input" value="<?= htmlspecialchars($v['sale_price'] ?? '') ?>" placeholder="Để trống nếu k sale" min="0"></td>
                                 <td><input type="number" name="variants[stock_quantity][]" class="variant-input" style="background:#f1f5f9; color:#94a3b8; cursor:not-allowed;" value="<?= htmlspecialchars($v['stock_quantity']) ?>" readonly title="Số lượng được tự động cập nhật qua module Nhập kho"></td>
                                 <td style="text-align: center;"><button type="button" class="btn-icon btn-remove-variant" style="color: var(--danger); border: none; background: transparent; cursor: pointer;"><i class="fas fa-trash-alt"></i></button></td>
                             </tr>

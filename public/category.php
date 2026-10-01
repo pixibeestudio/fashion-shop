@@ -16,11 +16,33 @@ $sizeFilter = $_GET['size'] ?? '';
 
 $sql = "SELECT p.id, p.name, 
         (SELECT price FROM product_variants WHERE product_id = p.id ORDER BY price ASC LIMIT 1) as price,
+        (SELECT sale_price FROM product_variants WHERE product_id = p.id AND sale_price > 0 ORDER BY sale_price ASC LIMIT 1) as sale_price,
         (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as main_image,
         (SELECT SUM(stock_quantity) FROM product_variants WHERE product_id = p.id) as total_stock,
         (SELECT GROUP_CONCAT(DISTINCT color SEPARATOR ',') FROM product_variants WHERE product_id = p.id) as colors
         FROM products p WHERE p.status = 'active'";
 $params = [];
+
+// Filter by category slug
+$catSlug = $_GET['cat'] ?? '';
+if (!empty($catSlug)) {
+    // We want to find the category ID and its children
+    $stmtCat = $db->prepare("SELECT id FROM categories WHERE slug = :slug");
+    $stmtCat->execute(['slug' => $catSlug]);
+    $catRow = $stmtCat->fetch(PDO::FETCH_ASSOC);
+    if ($catRow) {
+        $catId = $catRow['id'];
+        $sql .= " AND (p.category_id = :catId1 OR p.category_id IN (SELECT id FROM categories WHERE parent_id = :catId2))";
+        $params['catId1'] = $catId;
+        $params['catId2'] = $catId;
+    }
+}
+
+// Filter by sale
+$sale = $_GET['sale'] ?? '';
+if ($sale == '1') {
+    $sql .= " AND EXISTS (SELECT 1 FROM product_variants WHERE product_id = p.id AND sale_price IS NOT NULL AND sale_price > 0)";
+}
 
 function getColorHex($colorName) {
     $map = [
@@ -166,11 +188,19 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php if (!$imageUrl): ?>
                                 <i class="fas fa-image" style="color: #9CA3AF;"></i>
                             <?php endif; ?>
+                            <?php if (!empty($prod['sale_price']) && $prod['sale_price'] > 0): ?>
+                                <div class="badge-sale">SALE</div>
+                            <?php endif; ?>
                         </div>
                         <div class="product-info">
                             <div class="product-name" title="<?= htmlspecialchars($prod['name']) ?>"><?= htmlspecialchars($prod['name']) ?></div>
                             <div class="product-price-row">
-                                <span class="product-price"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                <?php if (!empty($prod['sale_price']) && $prod['sale_price'] > 0): ?>
+                                    <span class="product-price"><?= number_format($prod['sale_price'], 0, ',', '.') ?> ₫</span>
+                                    <span class="product-price" style="text-decoration: line-through; color: #9CA3AF; font-size: 14px; font-weight: normal; margin-left: 8px;"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                <?php else: ?>
+                                    <span class="product-price"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                <?php endif; ?>
                             </div>
                             <div class="color-swatches">
                                 <?php 

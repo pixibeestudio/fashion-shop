@@ -17,6 +17,24 @@ $customerPhone = $_SESSION['customer_phone'] ?? '';
 $customerEmail = $_SESSION['customer_email'] ?? '';
 $customerAddress = $_SESSION['customer_address'] ?? '';
 
+// Fetch saved addresses
+$savedAddresses = [];
+if ($customerId) {
+    require_once __DIR__ . '/../app/config/Database.php';
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT * FROM customer_addresses WHERE customer_id = :id ORDER BY is_default DESC");
+    $stmt->execute(['id' => $customerId]);
+    $savedAddresses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Auto-fill default address if not set
+    if (empty($customerAddress) && !empty($savedAddresses)) {
+        $default = $savedAddresses[0];
+        $customerName = $default['receiver_name'];
+        $customerPhone = $default['receiver_phone'];
+        $customerAddress = $default['address_line'] . ', ' . $default['ward'] . ', ' . $default['district'] . ', ' . $default['province'];
+    }
+}
+
 $cartController = new CartController();
 $cartData = $cartController->getCartItems();
 $items = $cartData['items'];
@@ -44,6 +62,39 @@ if (empty($items)) {
                     <div style="margin-bottom: 24px; padding: 16px; background: #f8fafc; border-radius: 8px; font-size: 14px;">
                         Bạn đã có tài khoản? <a href="login.php" style="color: var(--primary); font-weight: 600; text-decoration: none;">Đăng nhập</a> để thanh toán nhanh hơn và tích điểm.
                     </div>
+                    <?php elseif (!empty($savedAddresses)): ?>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px;">Chọn địa chỉ đã lưu</label>
+                        <select id="savedAddressSelector" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; background: white;" onchange="fillAddress(this)">
+                            <option value="">-- Khác / Nhập địa chỉ mới --</option>
+                            <?php foreach ($savedAddresses as $index => $addr): 
+                                $fullAddr = $addr['address_line'] . ', ' . $addr['ward'] . ', ' . $addr['district'] . ', ' . $addr['province'];
+                            ?>
+                                <option value="<?= $index ?>" 
+                                    data-name="<?= htmlspecialchars($addr['receiver_name']) ?>"
+                                    data-phone="<?= htmlspecialchars($addr['receiver_phone']) ?>"
+                                    data-address="<?= htmlspecialchars($fullAddr) ?>"
+                                    <?= $index === 0 ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($addr['receiver_name']) ?> - <?= htmlspecialchars($fullAddr) ?> <?= $addr['is_default'] ? '(Mặc định)' : '' ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <script>
+                    function fillAddress(select) {
+                        const form = document.getElementById('checkoutForm');
+                        if (select.value === "") {
+                            form.customer_name.value = "<?= htmlspecialchars($_SESSION['customer_name'] ?? '') ?>";
+                            form.phone.value = "<?= htmlspecialchars($_SESSION['customer_phone'] ?? '') ?>";
+                            form.address.value = "";
+                        } else {
+                            const option = select.options[select.selectedIndex];
+                            form.customer_name.value = option.getAttribute('data-name');
+                            form.phone.value = option.getAttribute('data-phone');
+                            form.address.value = option.getAttribute('data-address');
+                        }
+                    }
+                    </script>
                     <?php endif; ?>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">

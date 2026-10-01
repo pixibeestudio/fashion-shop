@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <td><input type="text" name="variants[color][]" class="variant-input" placeholder="Ví dụ: Đen" value="${color}" required></td>
             <td><input type="text" name="variants[size][]" class="variant-input" placeholder="Ví dụ: M" value="${size}" required></td>
             <td><input type="number" name="variants[price][]" class="variant-input" placeholder="0" min="0" value="${price}" required></td>
+            <td><input type="number" name="variants[sale_price][]" class="variant-input" placeholder="Để trống nếu k sale" min="0" value=""></td>
             <td><input type="number" name="variants[stock_quantity][]" class="variant-input" placeholder="0" value="0" readonly style="background:#f1f5f9; color:#94a3b8; cursor:not-allowed;" title="Số lượng được tự động cập nhật qua module Nhập kho"></td>
             <td style="text-align: center;"><button type="button" class="btn-icon btn-remove-variant" style="color: var(--danger); border: none; background: transparent; cursor: pointer;"><i class="fas fa-trash-alt"></i></button></td>
         `;

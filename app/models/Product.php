@@ -81,17 +81,19 @@ class Product {
 
             // 2. Insert Variants
             if (!empty($variants['sku'])) {
-                $sqlVariant = "INSERT INTO product_variants (product_id, sku, color, size, price, stock_quantity) 
-                               VALUES (:product_id, :sku, :color, :size, :price, :stock_quantity)";
+                $sqlVariant = "INSERT INTO product_variants (product_id, sku, color, size, price, sale_price, stock_quantity) 
+                               VALUES (:product_id, :sku, :color, :size, :price, :sale_price, :stock_quantity)";
                 $stmtVariant = $this->db->prepare($sqlVariant);
 
                 for ($i = 0; $i < count($variants['sku']); $i++) {
+                    $salePriceVal = !empty($variants['sale_price'][$i]) ? $variants['sale_price'][$i] : null;
                     $stmtVariant->execute([
                         'product_id' => $productId,
                         'sku' => $variants['sku'][$i],
                         'color' => $variants['color'][$i],
                         'size' => $variants['size'][$i],
                         'price' => $variants['price'][$i],
+                        'sale_price' => $salePriceVal,
                         'stock_quantity' => $variants['stock_quantity'][$i] ?: 0
                     ]);
                 }
@@ -207,27 +209,31 @@ class Product {
                     $vid = $variants['variant_id'][$i] ?? null;
                     if ($vid && in_array($vid, $existingVariantIds)) {
                         // Update
-                        $sqlV = "UPDATE product_variants SET sku = :sku, color = :color, size = :size, price = :price, stock_quantity = :stock_quantity WHERE id = :vid";
+                        $sqlV = "UPDATE product_variants SET sku = :sku, color = :color, size = :size, price = :price, sale_price = :sale_price, stock_quantity = :stock_quantity WHERE id = :vid";
                         $stmtV = $this->db->prepare($sqlV);
+                        $salePriceVal = !empty($variants['sale_price'][$i]) ? $variants['sale_price'][$i] : null;
                         $stmtV->execute([
                             'sku' => $variants['sku'][$i],
                             'color' => $variants['color'][$i],
                             'size' => $variants['size'][$i],
                             'price' => $variants['price'][$i],
+                            'sale_price' => $salePriceVal,
                             'stock_quantity' => $variants['stock_quantity'][$i] ?: 0,
                             'vid' => $vid
                         ]);
                         $submittedVariantIds[] = $vid;
                     } else {
                         // Insert
-                        $sqlV = "INSERT INTO product_variants (product_id, sku, color, size, price, stock_quantity) VALUES (:pid, :sku, :color, :size, :price, :sq)";
+                        $sqlV = "INSERT INTO product_variants (product_id, sku, color, size, price, sale_price, stock_quantity) VALUES (:pid, :sku, :color, :size, :price, :sale_price, :sq)";
                         $stmtV = $this->db->prepare($sqlV);
+                        $salePriceVal = !empty($variants['sale_price'][$i]) ? $variants['sale_price'][$i] : null;
                         $stmtV->execute([
                             'pid' => $id,
                             'sku' => $variants['sku'][$i],
                             'color' => $variants['color'][$i],
                             'size' => $variants['size'][$i],
                             'price' => $variants['price'][$i],
+                            'sale_price' => $salePriceVal,
                             'sq' => $variants['stock_quantity'][$i] ?: 0
                         ]);
                     }

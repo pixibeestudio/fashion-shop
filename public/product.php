@@ -25,7 +25,7 @@ $images = $stmtImgs->fetchAll(PDO::FETCH_COLUMN);
 $mainImage = !empty($images[0]) ? $images[0] : null;
 
 // Lấy TẤT CẢ biến thể - MỖI DÒNG LÀ 1 TỔ HỢP (màu + size) RIÊNG BIỆT
-$stmtVars = $db->prepare("SELECT id, sku, color, size, price, stock_quantity FROM product_variants WHERE product_id = :id ORDER BY color, size");
+$stmtVars = $db->prepare("SELECT id, sku, color, size, price, sale_price, stock_quantity FROM product_variants WHERE product_id = :id ORDER BY color, size");
 $stmtVars->execute(['id' => $productId]);
 $variants = $stmtVars->fetchAll(PDO::FETCH_ASSOC);
 
@@ -39,12 +39,22 @@ foreach ($variants as $v) {
     if (!empty($s) && !in_array($s, $sizes)) $sizes[] = $s;
 }
 
-// Lấy giá thấp nhất để hiển thị mặc định
 $minPrice = PHP_INT_MAX;
 $maxPrice = 0;
+$minOriginal = PHP_INT_MAX;
+$maxOriginal = 0;
+$hasSale = false;
 foreach ($variants as $v) {
-    if ($v['price'] < $minPrice) $minPrice = $v['price'];
-    if ($v['price'] > $maxPrice) $maxPrice = $v['price'];
+    $effectivePrice = (!empty($v['sale_price']) && $v['sale_price'] > 0) ? $v['sale_price'] : $v['price'];
+    if ($effectivePrice < $minPrice) $minPrice = $effectivePrice;
+    if ($effectivePrice > $maxPrice) $maxPrice = $effectivePrice;
+    
+    if ($v['price'] < $minOriginal) $minOriginal = $v['price'];
+    if ($v['price'] > $maxOriginal) $maxOriginal = $v['price'];
+
+    if (!empty($v['sale_price']) && $v['sale_price'] > 0) {
+        $hasSale = true;
+    }
 }
 
 $pageTitle = htmlspecialchars($product['name']) . " - Fashion Shop";
@@ -120,12 +130,23 @@ require_once __DIR__ . '/includes/header.php';
             Trạng thái: <?= $product['status'] == 'active' ? 'Đang kinh doanh' : 'Ngừng kinh doanh' ?>
         </div>
         
-        <div class="detail-price" id="displayPrice">
-            <?php if ($minPrice == $maxPrice): ?>
-                <?= number_format($minPrice, 0, ',', '.') ?> ₫
-            <?php else: ?>
-                <?= number_format($minPrice, 0, ',', '.') ?> ₫ - <?= number_format($maxPrice, 0, ',', '.') ?> ₫
-            <?php endif; ?>
+        <div class="detail-price" id="priceContainer" style="display: flex; align-items: baseline; gap: 12px;">
+            <span id="displaySalePrice" style="color: var(--danger); font-weight: 700;">
+                <?php if ($minPrice == $maxPrice): ?>
+                    <?= number_format($minPrice, 0, ',', '.') ?> ₫
+                <?php else: ?>
+                    <?= number_format($minPrice, 0, ',', '.') ?> ₫ - <?= number_format($maxPrice, 0, ',', '.') ?> ₫
+                <?php endif; ?>
+            </span>
+            <span id="displayOriginalPrice" style="text-decoration: line-through; color: #9CA3AF; font-size: 16px; font-weight: 400; <?= $hasSale ? 'display: inline-block;' : 'display: none;' ?>">
+                <?php if ($hasSale): ?>
+                    <?php if ($minOriginal == $maxOriginal): ?>
+                        <?= number_format($minOriginal, 0, ',', '.') ?> ₫
+                    <?php else: ?>
+                        <?= number_format($minOriginal, 0, ',', '.') ?> ₫ - <?= number_format($maxOriginal, 0, ',', '.') ?> ₫
+                    <?php endif; ?>
+                <?php endif; ?>
+            </span>
         </div>
         
         <div class="detail-desc">
@@ -287,7 +308,8 @@ require_once __DIR__ . '/includes/header.php';
             v.color.trim() === selectedColor && v.size.trim() === selectedSize
         );
 
-        const priceEl = document.getElementById('displayPrice');
+        const displaySalePrice = document.getElementById('displaySalePrice');
+        const displayOriginalPrice = document.getElementById('displayOriginalPrice');
         const skuEl = document.getElementById('displaySKU');
         const stockStatusEl = document.getElementById('stockStatus');
         const stockTextEl = document.getElementById('stockText');
@@ -296,8 +318,17 @@ require_once __DIR__ . '/includes/header.php';
 
         if (currentVariant) {
             // Cập nhật giá
-            const formattedPrice = parseInt(currentVariant.price).toLocaleString('vi-VN');
-            priceEl.textContent = formattedPrice + ' ₫';
+            if (currentVariant.sale_price && parseFloat(currentVariant.sale_price) > 0) {
+                const formattedSale = parseInt(currentVariant.sale_price).toLocaleString('vi-VN');
+                const formattedPrice = parseInt(currentVariant.price).toLocaleString('vi-VN');
+                displaySalePrice.textContent = formattedSale + ' ₫';
+                displayOriginalPrice.textContent = formattedPrice + ' ₫';
+                displayOriginalPrice.style.display = 'inline-block';
+            } else {
+                const formattedPrice = parseInt(currentVariant.price).toLocaleString('vi-VN');
+                displaySalePrice.textContent = formattedPrice + ' ₫';
+                displayOriginalPrice.style.display = 'none';
+            }
             
             // Cập nhật SKU
             skuEl.textContent = currentVariant.sku;

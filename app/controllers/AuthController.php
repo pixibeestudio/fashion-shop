@@ -160,8 +160,15 @@ class AuthController {
     }
     
     public function logout() {
-        session_destroy();
-        session_start();
+        // Unset customer auth session variables
+        unset($_SESSION['customer_id']);
+        unset($_SESSION['customer_name']);
+        
+        // Unset admin auth session variables
+        unset($_SESSION['admin_id']);
+        unset($_SESSION['admin_name']);
+        unset($_SESSION['role_id']);
+        
         set_flash_message('success', 'Bạn đã đăng xuất.');
         header('Location: /fashion-shop/public/login.php');
         exit;

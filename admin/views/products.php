@@ -133,7 +133,8 @@ $products = $pagination['data'];
                             <th>SKU</th>
                             <th>Màu sắc</th>
                             <th>Kích cỡ</th>
-                            <th>Giá</th>
+                            <th>Giá gốc</th>
+                            <th>Giá sale</th>
                             <th>Tồn kho</th>
                         </tr>
                     </thead>
@@ -209,18 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     varBody.innerHTML = '';
                     if (p.variants && p.variants.length > 0) {
                         p.variants.forEach(v => {
+                            let salePriceStr = (v.sale_price && parseFloat(v.sale_price) > 0) ? Number(v.sale_price).toLocaleString() + 'đ' : '-';
                             varBody.innerHTML += `
                                 <tr>
                                     <td>${v.sku}</td>
                                     <td>${v.color}</td>
                                     <td>${v.size}</td>
                                     <td>${Number(v.price).toLocaleString()}đ</td>
+                                    <td><span style="color:var(--danger); font-weight:600;">${salePriceStr}</span></td>
                                     <td>${v.stock_quantity}</td>
                                 </tr>
                             `;
                         });
                     } else {
-                        varBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Không có biến thể</td></tr>';
+                        varBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Không có biến thể</td></tr>';
                     }
 
                     viewModal.classList.add('active');

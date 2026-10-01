@@ -9,6 +9,7 @@ $db = Database::getInstance()->getConnection();
 // Lấy danh sách sản phẩm hiển thị trên trang chủ (lấy 4 sản phẩm)
 $stmt = $db->query("SELECT p.id, p.name, 
                    (SELECT price FROM product_variants WHERE product_id = p.id ORDER BY price ASC LIMIT 1) as price,
+                   (SELECT sale_price FROM product_variants WHERE product_id = p.id AND sale_price > 0 ORDER BY sale_price ASC LIMIT 1) as sale_price,
                    (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as main_image,
                    (SELECT GROUP_CONCAT(DISTINCT color SEPARATOR ',') FROM product_variants WHERE product_id = p.id) as colors
                    FROM products p WHERE p.status = 'active' ORDER BY p.id DESC LIMIT 4");
@@ -62,13 +63,22 @@ function getColorHex($colorName) {
                                 <?php if (!$imageUrl): ?>
                                     <i class="fas fa-image" style="color: #9CA3AF;"></i>
                                 <?php endif; ?>
-                                <div class="badge-sale">MỚI</div>
+                                <?php if (!empty($prod['sale_price']) && $prod['sale_price'] > 0): ?>
+                                    <div class="badge-sale">SALE</div>
+                                <?php else: ?>
+                                    <div class="badge-sale">MỚI</div>
+                                <?php endif; ?>
                             </div>
                             <div class="product-info">
                                 <div class="product-category">Thời trang</div>
                                 <div class="product-name" title="<?= htmlspecialchars($prod['name']) ?>"><?= htmlspecialchars($prod['name']) ?></div>
                                 <div class="product-price-row">
-                                    <span class="product-price"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                    <?php if (!empty($prod['sale_price']) && $prod['sale_price'] > 0): ?>
+                                        <span class="product-price"><?= number_format($prod['sale_price'], 0, ',', '.') ?> ₫</span>
+                                        <span class="product-price" style="text-decoration: line-through; color: #9CA3AF; font-size: 14px; font-weight: normal; margin-left: 8px;"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                    <?php else: ?>
+                                        <span class="product-price"><?= number_format($prod['price'], 0, ',', '.') ?> ₫</span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="color-swatches">
                                     <?php 

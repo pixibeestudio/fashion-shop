@@ -79,6 +79,7 @@ $categories = $catController->index();
                                 <th>Màu sắc <span style="color:red">*</span></th>
                                 <th>Kích cỡ <span style="color:red">*</span></th>
                                 <th>Giá bán (VNĐ) <span style="color:red">*</span></th>
+                                <th>Giá Sale (VNĐ)</th>
                                 <th>Tồn kho (Tự động)</th>
                                 <th></th>
                             </tr>

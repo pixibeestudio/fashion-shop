@@ -30,10 +30,10 @@ $customerName = $_SESSION['customer_name'] ?? null;
         
         <nav class="store-nav">
             <a href="/fashion-shop/public/index.php" class="<?= (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : '' ?>">Trang chủ</a>
-            <a href="/fashion-shop/public/category.php" class="<?= (basename($_SERVER['PHP_SELF']) == 'category.php') ? 'active' : '' ?>">Bộ sưu tập</a>
-            <a href="/fashion-shop/public/category.php?cat=ao-nam">Áo Nam</a>
-            <a href="/fashion-shop/public/category.php?cat=quan-nu">Quần Nữ</a>
-            <a href="/fashion-shop/public/category.php?sale=1" style="color: var(--danger); font-weight: 600;">Sale Off</a>
+            <a href="/fashion-shop/public/category.php" class="<?= (basename($_SERVER['PHP_SELF']) == 'category.php' && empty($_GET['cat']) && empty($_GET['sale'])) ? 'active' : '' ?>">Bộ sưu tập</a>
+            <a href="/fashion-shop/public/category.php?cat=nam" class="<?= (isset($_GET['cat']) && $_GET['cat'] == 'nam') ? 'active' : '' ?>">Nam</a>
+            <a href="/fashion-shop/public/category.php?cat=nu" class="<?= (isset($_GET['cat']) && $_GET['cat'] == 'nu') ? 'active' : '' ?>">Nữ</a>
+            <a href="/fashion-shop/public/category.php?sale=1" class="<?= (isset($_GET['sale']) && $_GET['sale'] == '1') ? 'active' : '' ?>" style="color: var(--danger); font-weight: 600;">Sale Off</a>
         </nav>
         
         <div class="store-search">
