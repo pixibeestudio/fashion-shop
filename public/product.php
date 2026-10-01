@@ -48,6 +48,7 @@ foreach ($variants as $v) {
 }
 
 $pageTitle = htmlspecialchars($product['name']) . " - Fashion Shop";
+$pageDescription = mb_substr(strip_tags(html_entity_decode($product['description'])), 0, 160) . '...';
 require_once __DIR__ . '/includes/header.php';
 ?>
 <style>
@@ -376,7 +377,19 @@ require_once __DIR__ . '/includes/header.php';
                 if (isBuyNow) {
                     window.location.href = '/fashion-shop/public/checkout.php';
                 } else {
-                    alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
+                    const cartIcon = document.getElementById('cartIconContainer');
+                    if (cartIcon) {
+                        cartIcon.classList.add('cart-shake');
+                        setTimeout(() => cartIcon.classList.remove('cart-shake'), 400);
+                    }
+                    
+                    const btnAdd = document.getElementById('btnAddToCart');
+                    btnAdd.innerHTML = '<i class="fas fa-check"></i> Đã thêm vào giỏ';
+                    btnAdd.style.background = 'var(--success)';
+                    setTimeout(() => {
+                        btnAdd.innerHTML = originalText;
+                        btnAdd.style.background = '';
+                    }, 2000);
                 }
             } else {
                 alert(data.message);

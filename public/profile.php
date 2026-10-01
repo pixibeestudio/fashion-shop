@@ -278,19 +278,19 @@ function getOrderStatusHTML($status) {
                             <tbody>
                                 <?php foreach ($orders as $order): ?>
                                 <tr style="border-bottom: 1px solid #e2e8f0; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-                                    <td style="padding: 16px; font-weight: 600; font-family: monospace; font-size: 15px;">
+                                    <td data-label="Mã Đơn" style="padding: 16px; font-weight: 600; font-family: monospace; font-size: 15px;">
                                         <?= htmlspecialchars($order['order_number']) ?>
                                     </td>
-                                    <td style="padding: 16px; color: var(--text-muted); font-size: 14px;">
+                                    <td data-label="Ngày Đặt" style="padding: 16px; color: var(--text-muted); font-size: 14px;">
                                         <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
                                     </td>
-                                    <td style="padding: 16px; font-weight: 700; color: var(--primary);">
+                                    <td data-label="Tổng Tiền" style="padding: 16px; font-weight: 700; color: var(--primary);">
                                         <?= number_format($order['total']) ?>đ
                                     </td>
-                                    <td style="padding: 16px;">
+                                    <td data-label="Trạng Thái" style="padding: 16px;">
                                         <?= getOrderStatusHTML($order['shipping_status']) ?>
                                     </td>
-                                    <td style="padding: 16px; text-align: right;">
+                                    <td data-label="Chi Tiết" style="padding: 16px; text-align: right;">
                                         <a href="order_detail.php?id=<?= $order['id'] ?>" style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
                                             Xem <i class="fas fa-chevron-right" style="font-size: 10px;"></i>
                                         </a>

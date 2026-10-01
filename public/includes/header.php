@@ -6,8 +6,14 @@ $customerName = $_SESSION['customer_name'] ?? null;
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Fashion Shop - Thời Trang Chính Hãng' ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title><?= htmlspecialchars($pageTitle ?? 'Fashion Shop - Thời Trang Chính Hãng') ?></title>
+    <meta name="description" content="<?= htmlspecialchars($pageDescription ?? 'Fashion Shop - Cửa hàng thời trang nam nữ chính hãng, thiết kế hiện đại, chất liệu cao cấp. Khám phá các bộ sưu tập áo thun, quần jean, phụ kiện mới nhất với nhiều ưu đãi hấp dẫn.') ?>">
+    <meta name="keywords" content="thời trang, quần áo, áo nam, quần nữ, thời trang chính hãng, fashion shop">
+    <meta property="og:title" content="<?= htmlspecialchars($pageTitle ?? 'Fashion Shop - Thời Trang Chính Hãng') ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($pageDescription ?? 'Cửa hàng thời trang nam nữ chính hãng, mua sắm dễ dàng, giao hàng tận nơi.') ?>">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#4F46E5">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome -->
@@ -49,9 +55,9 @@ $customerName = $_SESSION['customer_name'] ?? null;
             
             <a href="/fashion-shop/public/profile.php" class="action-icon" title="Dò đơn hàng"><i class="fas fa-box"></i></a>
             
-            <a href="/fashion-shop/public/cart.php" class="action-icon" title="Giỏ hàng">
+            <a href="/fashion-shop/public/cart.php" class="action-icon" id="cartIconContainer" title="Giỏ hàng">
                 <i class="fas fa-shopping-cart"></i>
-                <div class="cart-badge" id="cartCountBadge">0</div>
+                <div class="cart-badge" id="cartCountBadge" style="display: none;">0</div>
             </a>
         </div>
         </header>

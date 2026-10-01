@@ -227,3 +227,17 @@ body {
     .auth-container.right-panel-active .sign-up-container { display: block; }
     .overlay-container { display: none; }
 }
+
+@media (max-width: 768px) {
+    .auth-container { width: 95%; min-height: auto; border-radius: 12px; }
+    .auth-form { padding: 40px 30px; }
+    .form-header h1 { font-size: 24px; }
+}
+
+@media (max-width: 480px) {
+    .auth-container { width: 100%; border-radius: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+    .auth-form { padding: 30px 20px; }
+    .row { grid-template-columns: 1fr; gap: 0; }
+    .logo { margin-bottom: 24px; font-size: 24px; }
+    body { background-color: var(--surface); }
+}
